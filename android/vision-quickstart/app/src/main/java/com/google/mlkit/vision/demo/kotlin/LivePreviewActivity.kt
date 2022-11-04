@@ -17,19 +17,14 @@
 package com.google.mlkit.vision.demo.kotlin
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import android.widget.AdapterView
+import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
-import android.widget.CompoundButton
-import android.widget.ImageView
-import android.widget.Spinner
-import android.widget.TextView
-import android.widget.Toast
-import android.widget.ToggleButton
+import androidx.lifecycle.Observer
 import com.google.android.gms.common.annotation.KeepName
 import com.google.mlkit.common.model.LocalModel
 import com.google.mlkit.vision.demo.*
@@ -64,6 +59,8 @@ class LivePreviewActivity :
     private var preview: CameraSourcePreview? = null
     private var graphicOverlay: GraphicOverlay? = null
     private var tvScore: TextView? = null
+    private var tvCount: TextView? = null
+    private var progressBar: ProgressBar? = null
     private var selectedModel = OBJECT_DETECTION
     private var referencePoint = arrayListOf<PosePoint>()
 
@@ -72,10 +69,12 @@ class LivePreviewActivity :
         Log.d(TAG, "onCreate")
         setContentView(R.layout.activity_vision_live_preview)
 
-        initReference()
+//        initReference()
 
         preview = findViewById(R.id.preview_view)
         tvScore = findViewById(R.id.tv_score)
+        tvCount = findViewById(R.id.tv_count)
+        progressBar = findViewById(R.id.progress_count)
         if (preview == null) {
             Log.d(TAG, "Preview is null")
         }
@@ -330,8 +329,22 @@ class LivePreviewActivity :
                         runClassification,
                         /* isStreamMode = */ true
                     )
-                    poseDetectorProcessor.score.observe(this){
-                        tvScore?.text = it.toString()
+                    var count = 0
+                    var currentTime = System.currentTimeMillis()
+                    poseDetectorProcessor.score.observe(this) {
+                        if (it.toInt() >= 95) {
+                            if (System.currentTimeMillis() - currentTime > 2000) {
+                                count++
+                                currentTime = System.currentTimeMillis()
+                            }
+                            tvScore?.setTextColor(Color.parseColor("#7C4DFF"))
+                        } else {
+                            tvScore?.setTextColor(Color.parseColor("#f44242"))
+                        }
+
+                        progressBar?.progress = it.toInt()
+                        tvCount?.text = "次数：$count"
+                        tvScore?.text = it.toInt().toString()
                     }
                     cameraSource!!.setMachineLearningFrameProcessor(
                         poseDetectorProcessor

@@ -374,6 +374,7 @@ public class CameraSource {
       }
     }
 
+    selectedPair = validPreviewSizes.get(7);
     return selectedPair;
   }
 

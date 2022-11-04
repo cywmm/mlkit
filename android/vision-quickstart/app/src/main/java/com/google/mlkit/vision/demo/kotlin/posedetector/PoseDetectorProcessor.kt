@@ -26,7 +26,6 @@ import com.google.mlkit.vision.demo.AngleUtils
 import com.google.mlkit.vision.demo.GraphicOverlay
 import com.google.mlkit.vision.demo.java.posedetector.classification.PoseClassifierProcessor
 import com.google.mlkit.vision.demo.kotlin.VisionProcessorBase
-import com.google.mlkit.vision.demo.kotlin.entity.PosePoint
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseDetection
 import com.google.mlkit.vision.pose.PoseDetector
@@ -117,7 +116,10 @@ class PoseDetectorProcessor(
             )
         )
 
+
         val allPoseLandmarks = poseWithClassification.pose.allPoseLandmarks
+        //左边：140.99289:147.85149---右边：121.878944:196.83575
+        //左边：140.8273:39.963863---右边：113.53857:108.80207
         if (allPoseLandmarks.size >= 33) {
             val referencePoint = AngleUtils.to15Point(allPoseLandmarks)
             if (isStreamMode) {
@@ -130,6 +132,7 @@ class PoseDetectorProcessor(
             } else {
                 AngleUtils.setCurrentPoint(AngleUtils.to15Point(allPoseLandmarks))
             }
+//        }
         }
     }
 

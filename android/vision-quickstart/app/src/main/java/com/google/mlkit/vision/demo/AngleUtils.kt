@@ -11,7 +11,7 @@ object AngleUtils {
     val currentPoint = ArrayList<PosePoint>()
     val trunkPoseAngles = ArrayList<Double>()
 
-    fun setCurrentPoint(referencePoint: ArrayList<PosePoint>){
+    fun setCurrentPoint(referencePoint: ArrayList<PosePoint>) {
         trunkPoseAngles.clear()
         currentPoint.clear()
         currentPoint.addAll(referencePoint)
@@ -116,17 +116,47 @@ object AngleUtils {
 
     fun getTrunkPoseAngles(referencePoint: ArrayList<PosePoint>): ArrayList<Double> {
         val trunkPoseAngles = arrayListOf<Double>()
-        trunkPoseAngles.add(getAngle(referencePoint[1], referencePoint[2], referencePoint[3]))
+        trunkPoseAngles.add(getAngle(referencePoint[5], referencePoint[2], referencePoint[4]))
         trunkPoseAngles.add(getAngle(referencePoint[2], referencePoint[3], referencePoint[4]))
-        trunkPoseAngles.add(getAngle(referencePoint[1], referencePoint[5], referencePoint[6]))
+        trunkPoseAngles.add(getAngle(referencePoint[2], referencePoint[5], referencePoint[7]))
         trunkPoseAngles.add(getAngle(referencePoint[5], referencePoint[6], referencePoint[7]))
         trunkPoseAngles.add(getAngle(referencePoint[14], referencePoint[8], referencePoint[9]))
         trunkPoseAngles.add(getAngle(referencePoint[8], referencePoint[9], referencePoint[10]))
         trunkPoseAngles.add(getAngle(referencePoint[14], referencePoint[11], referencePoint[12]))
         trunkPoseAngles.add(getAngle(referencePoint[11], referencePoint[12], referencePoint[13]))
         trunkPoseAngles.add(getAngle(referencePoint[8], referencePoint[14], referencePoint[11]))
+
+        trunkPoseAngles.add(getAngle(referencePoint[4], referencePoint[14], referencePoint[1]))
+        trunkPoseAngles.add(getAngle(referencePoint[7], referencePoint[14], referencePoint[1]))
+
+        trunkPoseAngles.add(getAngle(referencePoint[2], referencePoint[5], referencePoint[11]))
+        trunkPoseAngles.add(getAngle(referencePoint[5], referencePoint[2], referencePoint[8]))
+
+        trunkPoseAngles.add(getAngle(referencePoint[2], referencePoint[8], referencePoint[10]))
+        trunkPoseAngles.add(getAngle(referencePoint[5], referencePoint[11], referencePoint[13]))
+
+        trunkPoseAngles.add(getAngle(referencePoint[0], referencePoint[14], referencePoint[13]))
+        trunkPoseAngles.add(getAngle(referencePoint[0], referencePoint[14], referencePoint[10]))
         return trunkPoseAngles
     }
+
+//    getAngle: 128.8154279727162
+//    getAngle: 100.97026985875912
+//    getAngle: -264.5937693513968
+//    getAngle: -202.79812460932672
+//    getAngle: 74.97093302932865
+//    getAngle: 179.03300412910994
+//    getAngle: 80.12990787075701
+//    getAngle: 176.72209158570615
+//    getAngle: 3.2796201306966997
+//    getAngle: 35.728060435081794
+//    getAngle: 25.630079954797747
+//    getAngle: 64.93628866584704
+//    getAngle: 101.3083300717289
+//    getAngle: 121.58787569963613
+//    getAngle: 142.78290892066948
+//    getAngle: 73.12636849960934
+//    getAngle: 81.9785122299993
 
     fun getAngle(
         firstPoint: PosePoint,
@@ -144,7 +174,7 @@ object AngleUtils {
             )).toDouble()
         )
 
-//        result = abs(result) // Angle should never be negative
+        if (result < 0 && result > -180) result = abs(result) // Angle should never be negative
         if (result > 180) {
             result = 360.0 - result // Always get the acute representation of the angle
         }
@@ -153,7 +183,10 @@ object AngleUtils {
         return result
     }
 
-    fun getPoseScore(referPoseAngles: ArrayList<Double>, trunkPoseAngles: ArrayList<Double>):Double {
+    fun getPoseScore(
+        referPoseAngles: ArrayList<Double>,
+        trunkPoseAngles: ArrayList<Double>
+    ): Double {
         val trunkScore = arrayListOf<Double>()
         referPoseAngles.forEachIndexed { index, d ->
             val isSame = trunkPoseAngles[index] * d > 0
@@ -163,8 +196,10 @@ object AngleUtils {
                     trunkScore.add(0.0)
                 } else {
                     val abs = abs((vs / 180) * 100)
-                    trunkScore.add(100 - abs)
-                    Log.d("AngleUtils", "abs:${100 - abs}")
+
+                    val score = 100 - abs
+                    trunkScore.add(if (score >= 80) score else 0.0)
+                    Log.d("AngleUtils", "abs:$score")
                 }
             } else {
                 trunkScore.add(0.0)
@@ -172,6 +207,6 @@ object AngleUtils {
         }
 
         Log.d("AngleUtils", "average:$trunkScore----${trunkScore.average()}")
-return trunkScore.average()
+        return trunkScore.average()
     }
 }
