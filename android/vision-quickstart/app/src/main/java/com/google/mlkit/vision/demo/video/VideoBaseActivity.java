@@ -13,17 +13,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.google.mlkit.vision.demo.GraphicOverlay;
 import com.google.mlkit.vision.demo.R;
 import com.google.mlkit.vision.demo.preference.PreferenceUtils;
@@ -37,9 +36,8 @@ public abstract class VideoBaseActivity extends Fragment {
     private static final String SELFIE_POSE = "Pose";
 
     private GraphicOverlay graphicOverlay;
-    private SimpleExoPlayer player;
-    private PlayerView playerView;
-    public ImageView vvvvv;
+    private ExoPlayer player;
+    private StyledPlayerView playerView;
 
     private VisionVideoProcessorBase imageProcessor;
     private String selectedProcessor = SELFIE_POSE;
@@ -62,7 +60,6 @@ public abstract class VideoBaseActivity extends Fragment {
         player = createPlayer();
 
         playerView = view.findViewById(R.id.player_view);
-        vvvvv = view.findViewById(R.id.vvvvv);
         graphicOverlay = view.findViewById(R.id.graphic_overlay2);
         playerView.setPlayer(player);
         player.setRepeatMode(Player.REPEAT_MODE_ONE);
@@ -75,7 +72,7 @@ public abstract class VideoBaseActivity extends Fragment {
     }
 
     protected abstract @NonNull
-    SimpleExoPlayer createPlayer();
+    ExoPlayer createPlayer();
 
     protected abstract @Nullable
     View createVideoFrameView();
@@ -179,7 +176,6 @@ public abstract class VideoBaseActivity extends Fragment {
                     boolean visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(getContext());
                     boolean rescaleZ = PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(getContext());
                     boolean runClassification = PreferenceUtils.shouldPoseDetectionRunClassification(getContext());
-
                     PoseDetectorOptions.Builder builder =
                             new PoseDetectorOptions.Builder().setDetectorMode(PoseDetectorOptions.STREAM_MODE);
                     builder.setPreferredHardwareConfigs(PoseDetectorOptions.CPU);

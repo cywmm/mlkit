@@ -24,6 +24,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.google.android.gms.common.annotation.KeepName
 import com.google.mlkit.common.model.LocalModel
@@ -61,7 +62,7 @@ class LivePreviewActivity :
     private var tvScore: TextView? = null
     private var tvCount: TextView? = null
     private var progressBar: ProgressBar? = null
-    private var selectedModel = OBJECT_DETECTION
+    private var selectedModel = POSE_DETECTION
     private var referencePoint = arrayListOf<PosePoint>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -326,24 +327,24 @@ class LivePreviewActivity :
                         shouldShowInFrameLikelihood,
                         visualizeZ,
                         rescaleZ,
-                        runClassification,
+                        false,
                         /* isStreamMode = */ true
                     )
                     var count = 0
                     var currentTime = System.currentTimeMillis()
                     poseDetectorProcessor.score.observe(this) {
-                        if (it.toInt() >= 95) {
+                        if (it.toInt() >= 90) {
                             if (System.currentTimeMillis() - currentTime > 2000) {
                                 count++
                                 currentTime = System.currentTimeMillis()
                             }
-                            tvScore?.setTextColor(Color.parseColor("#7C4DFF"))
-                        } else {
                             tvScore?.setTextColor(Color.parseColor("#f44242"))
+                        } else {
+                            tvScore?.setTextColor(Color.parseColor("#7C4DFF"))
                         }
 
                         progressBar?.progress = it.toInt()
-                        tvCount?.text = "次数：$count"
+//                        tvCount?.text = "次数：$count"
                         tvScore?.text = it.toInt().toString()
                     }
                     cameraSource!!.setMachineLearningFrameProcessor(
