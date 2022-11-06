@@ -109,6 +109,12 @@
             android:name=".preference.SettingsActivity"
             android:exported="false"/>
 
+        <activity
+            android:name=".video.VideoTextureViewActivity"
+            android:exported="true"
+            android:process=":adbbdd"
+            android:theme="@style/dialog_style"/>
+
     </application>
     <queries>
         <intent>

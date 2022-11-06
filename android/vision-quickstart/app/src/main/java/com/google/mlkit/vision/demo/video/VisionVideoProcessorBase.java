@@ -345,7 +345,7 @@ public abstract class VisionVideoProcessorBase<T> implements VisionVideoProcesso
                                 graphicOverlay.add(new CameraImageGraphic(graphicOverlay, originalCameraImage));
                             }
                             VisionVideoProcessorBase.this.onSuccess(results, graphicOverlay);
-                            if (!PreferenceUtils.shouldHideDetectionInfo(graphicOverlay.getContext())) {
+                            if (false) {
                                 graphicOverlay.add(
                                         new InferenceInfoGraphic(
                                                 graphicOverlay,

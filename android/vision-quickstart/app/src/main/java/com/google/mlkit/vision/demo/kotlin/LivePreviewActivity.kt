@@ -19,27 +19,27 @@ package com.google.mlkit.vision.demo.kotlin
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
-import androidx.lifecycle.Observer
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.annotation.KeepName
 import com.google.mlkit.common.model.LocalModel
 import com.google.mlkit.vision.demo.*
 import com.google.mlkit.vision.demo.kotlin.barcodescanner.BarcodeScannerProcessor
 import com.google.mlkit.vision.demo.kotlin.entity.PosePoint
 import com.google.mlkit.vision.demo.kotlin.facedetector.FaceDetectorProcessor
+import com.google.mlkit.vision.demo.kotlin.facemeshdetector.FaceMeshDetectorProcessor
 import com.google.mlkit.vision.demo.kotlin.labeldetector.LabelDetectorProcessor
 import com.google.mlkit.vision.demo.kotlin.objectdetector.ObjectDetectorProcessor
 import com.google.mlkit.vision.demo.kotlin.posedetector.PoseDetectorProcessor
 import com.google.mlkit.vision.demo.kotlin.segmenter.SegmenterProcessor
-import com.google.mlkit.vision.demo.kotlin.facemeshdetector.FaceMeshDetectorProcessor;
 import com.google.mlkit.vision.demo.kotlin.textdetector.TextRecognitionProcessor
 import com.google.mlkit.vision.demo.preference.PreferenceUtils
 import com.google.mlkit.vision.demo.preference.SettingsActivity
 import com.google.mlkit.vision.demo.preference.SettingsActivity.LaunchSource
+import com.google.mlkit.vision.demo.video.VideoTextureViewActivity
 import com.google.mlkit.vision.label.custom.CustomImageLabelerOptions
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
 import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
@@ -48,7 +48,6 @@ import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.io.IOException
-import java.util.ArrayList
 
 /** Live preview demo for ML Kit APIs. */
 @KeepName
@@ -60,6 +59,7 @@ class LivePreviewActivity :
     private var graphicOverlay: GraphicOverlay? = null
     private var tvScore: TextView? = null
     private var tvCount: TextView? = null
+    private var btnStart: Button? = null
     private var progressBar: ProgressBar? = null
     private var selectedModel = OBJECT_DETECTION
     private var referencePoint = arrayListOf<PosePoint>()
@@ -72,6 +72,7 @@ class LivePreviewActivity :
 //        initReference()
 
         preview = findViewById(R.id.preview_view)
+        btnStart = findViewById(R.id.btn_start)
         tvScore = findViewById(R.id.tv_score)
         tvCount = findViewById(R.id.tv_count)
         progressBar = findViewById(R.id.progress_count)
@@ -125,6 +126,10 @@ class LivePreviewActivity :
         }
 
         createCameraSource(selectedModel)
+
+        btnStart?.setOnClickListener {
+            startActivity(Intent(this, VideoTextureViewActivity::class.java))
+        }
     }
 
     //[PosePoint(x=683.0867, y=499.22522), PosePoint(x=685.8696, y=609.0366), PosePoint(x=575.3723, y=610.8174), PosePoint(x=521.52954, y=387.92426),
@@ -160,7 +165,7 @@ class LivePreviewActivity :
         selectedModel = parent?.getItemAtPosition(pos).toString()
         Log.d(TAG, "Selected model: $selectedModel")
         preview?.stop()
-        createCameraSource(selectedModel)
+        createCameraSource(POSE_DETECTION)
         startCameraSource()
     }
 
@@ -326,24 +331,24 @@ class LivePreviewActivity :
                         shouldShowInFrameLikelihood,
                         visualizeZ,
                         rescaleZ,
-                        runClassification,
+                        false,
                         /* isStreamMode = */ true
                     )
                     var count = 0
                     var currentTime = System.currentTimeMillis()
                     poseDetectorProcessor.score.observe(this) {
-                        if (it.toInt() >= 95) {
+                        if (it.toInt() >= 90) {
                             if (System.currentTimeMillis() - currentTime > 2000) {
                                 count++
                                 currentTime = System.currentTimeMillis()
                             }
-                            tvScore?.setTextColor(Color.parseColor("#7C4DFF"))
-                        } else {
                             tvScore?.setTextColor(Color.parseColor("#f44242"))
+                        } else {
+                            tvScore?.setTextColor(Color.parseColor("#7C4DFF"))
                         }
 
                         progressBar?.progress = it.toInt()
-                        tvCount?.text = "次数：$count"
+//                        tvCount?.text = "次数：$count"
                         tvScore?.text = it.toInt().toString()
                     }
                     cameraSource!!.setMachineLearningFrameProcessor(
@@ -394,6 +399,7 @@ class LivePreviewActivity :
 
     public override fun onResume() {
         super.onResume()
+        preview?.stop()
         Log.d(TAG, "onResume")
         createCameraSource(selectedModel)
         startCameraSource()
@@ -402,7 +408,7 @@ class LivePreviewActivity :
     /** Stops the camera. */
     override fun onPause() {
         super.onPause()
-        preview?.stop()
+//        preview?.stop()
     }
 
     public override fun onDestroy() {

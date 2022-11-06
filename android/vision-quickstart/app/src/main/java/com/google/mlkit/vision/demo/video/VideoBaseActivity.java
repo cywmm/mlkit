@@ -2,8 +2,10 @@ package com.google.mlkit.vision.demo.video;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,33 +15,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.google.mlkit.vision.demo.GraphicOverlay;
 import com.google.mlkit.vision.demo.R;
 import com.google.mlkit.vision.demo.preference.PreferenceUtils;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
 import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions;
 
-public abstract class VideoBaseActivity extends Fragment {
+public abstract class VideoBaseActivity extends Activity {
     private static final String TAG = VideoBaseActivity.class.getSimpleName();
 
     private static final int REQUEST_CHOOSE_VIDEO = 1001;
     private static final String SELFIE_POSE = "Pose";
 
     private GraphicOverlay graphicOverlay;
-    private SimpleExoPlayer player;
-    private PlayerView playerView;
-    public ImageView vvvvv;
+    private ExoPlayer player;
+    private StyledPlayerView playerView;
+//    private VideoView playerView;
 
     private VisionVideoProcessorBase imageProcessor;
     private String selectedProcessor = SELFIE_POSE;
@@ -49,33 +52,57 @@ public abstract class VideoBaseActivity extends Fragment {
     private boolean processing;
     private boolean pending;
     private Bitmap lastFrame;
+    private final Uri parse = Uri.parse("/storage/emulated/0/DCIM/output.mp4");
+//    private final Uri parse = Uri.parse("https://online-resources.oss-cn-shanghai.aliyuncs.com/VIRTUAL/AI/16x9/hls/A1/resource.m3u8");
 
-    @Nullable
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_base_video, container, false);
-        initView(view);
-        return view;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_base_video);
+
+        player = createPlayer();
+
+        playerView = findViewById(R.id.player_view);
+        graphicOverlay = findViewById(R.id.graphic_overlay2);
+
+        playerView.setPlayer(player);
+        player.setRepeatMode(Player.REPEAT_MODE_ONE);
+//        FrameLayout contentFrame = playerView.findViewById(R.id.exo_content_frame);
+//        View videoFrameView = createVideoFrameView();
+//        if (videoFrameView != null) contentFrame.addView(videoFrameView);
+
+        setupPlayer(parse);
     }
+//    @Nullable
+//    @Override
+//    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+//        View view = inflater.inflate(R.layout.activity_base_video, container, false);
+//        initView(view);
+//        return view;
+//    }
 
     private void initView(View view) {
         player = createPlayer();
 
         playerView = view.findViewById(R.id.player_view);
-        vvvvv = view.findViewById(R.id.vvvvv);
         graphicOverlay = view.findViewById(R.id.graphic_overlay2);
+
+
+//        playerView.setVideoURI(parse);
+//        playerView.setOnPreparedListener(mp -> playerView.start());
         playerView.setPlayer(player);
         player.setRepeatMode(Player.REPEAT_MODE_ONE);
         FrameLayout contentFrame = playerView.findViewById(R.id.exo_content_frame);
         View videoFrameView = createVideoFrameView();
         if (videoFrameView != null) contentFrame.addView(videoFrameView);
 
-        setupPlayer(Uri.parse("https://online-resources.oss-cn-shanghai.aliyuncs.com/VIRTUAL/AI/16x9/hls/05YJCJA1001/resource.m3u8"));
-//        setupPlayer(Uri.parse("https://online-resources.oss-cn-shanghai.aliyuncs.com/VIRTUAL/AI/16x9/hls/A1/resource.m3u8"));
+//        setupPlayer(parse);
+        setupPlayer(parse);
     }
 
     protected abstract @NonNull
-    SimpleExoPlayer createPlayer();
+    ExoPlayer createPlayer();
 
     protected abstract @Nullable
     View createVideoFrameView();
@@ -173,17 +200,16 @@ public abstract class VideoBaseActivity extends Fragment {
             switch (selectedProcessor) {
                 case SELFIE_POSE:
                     PoseDetectorOptionsBase poseDetectorOptions =
-                            PreferenceUtils.getPoseDetectorOptionsForLivePreview(getContext());
+                            PreferenceUtils.getPoseDetectorOptionsForLivePreview(this);
                     boolean shouldShowInFrameLikelihood =
-                            PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(getContext());
-                    boolean visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(getContext());
-                    boolean rescaleZ = PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(getContext());
-                    boolean runClassification = PreferenceUtils.shouldPoseDetectionRunClassification(getContext());
-
+                            PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this);
+                    boolean visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this);
+                    boolean rescaleZ = PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this);
+                    boolean runClassification = PreferenceUtils.shouldPoseDetectionRunClassification(this);
                     PoseDetectorOptions.Builder builder =
                             new PoseDetectorOptions.Builder().setDetectorMode(PoseDetectorOptions.STREAM_MODE);
                     builder.setPreferredHardwareConfigs(PoseDetectorOptions.CPU);
-                    imageProcessor = new PoseDetectorVideoProcessor(getContext(),
+                    imageProcessor = new PoseDetectorVideoProcessor(this,
                             builder.build(),
                             shouldShowInFrameLikelihood,
                             visualizeZ,
@@ -196,7 +222,7 @@ public abstract class VideoBaseActivity extends Fragment {
         } catch (Exception e) {
             Log.e(TAG, "Can not create image processor: " + selectedProcessor, e);
             Toast.makeText(
-                            getContext(),
+                            this,
                             "Can not create image processor: " + e.getMessage(),
                             Toast.LENGTH_LONG)
                     .show();
