@@ -8,10 +8,9 @@
         android:id="@+id/player_view"
         android:layout_width="500dp"
         android:layout_height="300dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:buffered_color="@color/colorAccent"
-        app:surface_type="spherical_gl_surface_view"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.mlkit.vision.demo.GraphicOverlay
         android:id="@+id/graphic_overlay2"
@@ -21,4 +20,13 @@
         app:layout_constraintLeft_toLeftOf="@id/player_view"
         app:layout_constraintRight_toRightOf="@id/player_view"
         app:layout_constraintTop_toTopOf="@id/player_view" />
+
+    <ImageView
+        android:id="@+id/vvvvv"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="100dp"
+        android:layout_height="100dp"/>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
