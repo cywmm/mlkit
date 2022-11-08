@@ -1,32 +1,24 @@
 package com.google.mlkit.vision.demo.video;
 
-import static android.app.Activity.RESULT_OK;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
-import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.aidong.media.video.StyledPlayerView;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.google.mlkit.vision.demo.GraphicOverlay;
 import com.google.mlkit.vision.demo.R;
 import com.google.mlkit.vision.demo.preference.PreferenceUtils;
@@ -52,8 +44,8 @@ public abstract class VideoBaseActivity extends Activity {
     private boolean processing;
     private boolean pending;
     private Bitmap lastFrame;
-    private final Uri parse = Uri.parse("/storage/emulated/0/DCIM/output.mp4");
-//    private final Uri parse = Uri.parse("https://online-resources.oss-cn-shanghai.aliyuncs.com/VIRTUAL/AI/16x9/hls/A1/resource.m3u8");
+//    private final Uri parse = Uri.parse("/sdcard/DCIM/Videos/Output.mp4/sdcard/DCIM/Videos/Output.mp4/sdcard/DCIM/Videos/Output.mp4");
+    private final Uri parse = Uri.parse("https://online-resources.oss-cn-shanghai.aliyuncs.com/VIRTUAL/AI/16x9/hls/A1/resource.m3u8");
 
 
     @Override
@@ -151,7 +143,7 @@ public abstract class VideoBaseActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        createImageProcessor();
+//        createImageProcessor();
 
     }
 
@@ -159,7 +151,7 @@ public abstract class VideoBaseActivity extends Activity {
     public void onPause() {
         super.onPause();
         player.pause();
-        stopImageProcessor();
+//        stopImageProcessor();
     }
 
     @Override

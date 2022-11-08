@@ -141,7 +141,7 @@ dependencies {
     // On Device Machine Learnings
     implementation "com.google.android.odml:image:1.0.0-beta1"
 
-    api 'com.google.android.exoplayer:exoplayer:2.18.1'
+    implementation project(':lib-media')
 }
 
 configurations {

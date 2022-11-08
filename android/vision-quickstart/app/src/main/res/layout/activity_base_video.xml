@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.exoplayer2.ui.StyledPlayerView
+    <com.aidong.media.video.StyledPlayerView
         android:id="@+id/player_view"
         android:layout_width="500dp"
         android:layout_height="300dp"

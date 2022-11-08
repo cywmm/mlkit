@@ -41,9 +41,9 @@ public class VideoTextureViewActivity extends VideoBaseActivity implements Textu
 
     @Override
     public void onSurfaceTextureAvailable(@NonNull SurfaceTexture surface, int width, int height) {
-        surfaceTexture = surface;
-        playerSurface = new Surface(surface);
-        player.setVideoSurface(playerSurface);
+//        surfaceTexture = surface;
+//        playerSurface = new Surface(surface);
+//        player.setVideoSurface(playerSurface);
     }
 
     @Override
