@@ -277,6 +277,7 @@ public class CameraSource {
       throw new IOException("Could not find suitable preview frames per second range.");
     }
 
+    Log.d(TAG, "createCamera: "+previewFpsRange[0]+"---"+previewFpsRange[1]);
     Camera.Parameters parameters = camera.getParameters();
 
     Size pictureSize = sizePair.picture;

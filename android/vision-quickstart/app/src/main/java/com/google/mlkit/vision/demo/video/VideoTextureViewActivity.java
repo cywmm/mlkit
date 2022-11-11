@@ -13,11 +13,13 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.Player;
 
-public class VideoTextureViewActivity extends VideoBaseActivity implements TextureView.SurfaceTextureListener {
+import java.io.IOException;
 
+public class VideoTextureViewActivity extends VideoBaseActivity implements TextureView.SurfaceTextureListener, Player.Listener {
+    private static final String TAG = "VideoTextureViewActivit";
     private Long key = 0L;
     private ExoPlayer player;
     private TextureView textureView;
@@ -29,6 +31,7 @@ public class VideoTextureViewActivity extends VideoBaseActivity implements Textu
     protected ExoPlayer createPlayer() {
         handler = new Handler(Looper.getMainLooper());
         player = new ExoPlayer.Builder(this).build();
+        player.addListener(this);
         return player;
     }
 
@@ -41,9 +44,9 @@ public class VideoTextureViewActivity extends VideoBaseActivity implements Textu
 
     @Override
     public void onSurfaceTextureAvailable(@NonNull SurfaceTexture surface, int width, int height) {
-//        surfaceTexture = surface;
-//        playerSurface = new Surface(surface);
-//        player.setVideoSurface(playerSurface);
+        surfaceTexture = surface;
+        playerSurface = new Surface(surface);
+        player.setVideoSurface(playerSurface);
     }
 
     @Override
@@ -61,24 +64,40 @@ public class VideoTextureViewActivity extends VideoBaseActivity implements Textu
         return true;
     }
 
+    @Override
+    public void onPlaybackStateChanged(int playbackState) {
+        if (playbackState == Player.STATE_ENDED) {
+            Log.d(TAG, "onPlaybackStateChanged: 播放结束");
+            try {
+                imageProcessor.saveToJson("test002.json");
+            } catch (IOException e) {
+                Log.d(TAG, "onPlaybackStateChanged: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
     boolean isSave = false;
+    long l = 0;
 
     @Override
     public void onSurfaceTextureUpdated(@NonNull SurfaceTexture surface) {
         Size size = getSizeForDesiredSize(textureView.getWidth(), textureView.getHeight(), 500);
         handler.post(() -> {
-            long l = player.getCurrentPosition() / 1000;
+            l = player.getCurrentPosition() / 1000;
             if (key != l) {
                 isSave = l % 3 == 0L;
                 key = l;
-                Log.d("PoseDetectorProcessor", "onDrawFrame: " + isSave + "--" + l % 3);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Bitmap bitmap = textureView.getBitmap(size.getWidth(), size.getHeight());
+                    processFrame(bitmap, isSave, l);
+
+                    Log.d(TAG, "onSurfaceTextureUpdated: size:" + bitmap.getWidth() + "---" + bitmap.getHeight());
+//            preView.setImageBitmap(bitmap);
+                }
             }
         });
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Bitmap bitmap = textureView.getBitmap(size.getWidth(), size.getHeight());
-            processFrame(bitmap, isSave);
 
-//            vvvvv.setImageBitmap(bitmap);
-        }
     }
 }

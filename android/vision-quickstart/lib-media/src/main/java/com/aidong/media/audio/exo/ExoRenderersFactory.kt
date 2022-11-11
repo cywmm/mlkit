@@ -159,40 +159,6 @@ class ExoRenderersFactory : RenderersFactory {
     }
 
     /**
-     * Enable calling [MediaCodec.start] immediately after [MediaCodec.flush] on the
-     * playback thread, when operating the codec in asynchronous mode. If disabled, [ ][MediaCodec.start] will be called by the callback thread after pending callbacks are handled.
-     *
-     *
-     * By default, this feature is disabled.
-     *
-     *
-     * This method is experimental, and will be renamed or removed in a future release.
-     *
-     * @param enabled Whether [MediaCodec.start] will be called on the playback thread
-     * immediately after [MediaCodec.flush].
-     * @return This factory, for convenience.
-     */
-    fun experimentalSetImmediateCodecStartAfterFlushEnabled(
-        enabled: Boolean
-    ): ExoRenderersFactory {
-        codecAdapterFactory.experimentalSetImmediateCodecStartAfterFlushEnabled(enabled)
-        return this
-    }
-
-    /**
-     * Sets whether to enable fallback to lower-priority decoders if decoder initialization fails.
-     * This may result in using a decoder that is less efficient or slower than the primary decoder.
-     *
-     * @param enableDecoderFallback Whether to enable fallback to lower-priority decoders if decoder
-     * initialization fails.
-     * @return This factory, for convenience.
-     */
-    fun setEnableDecoderFallback(enableDecoderFallback: Boolean): ExoRenderersFactory {
-        this.enableDecoderFallback = enableDecoderFallback
-        return this
-    }
-
-    /**
      * Sets a [MediaCodecSelector] for use by [MediaCodec] based renderers.
      *
      *

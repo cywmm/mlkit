@@ -57,7 +57,6 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.DiscontinuityReason;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.Timeline.Period;
-import com.google.android.exoplayer2.TracksInfo;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.ui.AdOverlayInfo;
@@ -261,7 +260,7 @@ import java.util.List;
  * attribute on a StyledPlayerView. This will cause the specified layout to be inflated instead of
  * {@code exo_styled_player_view.xml} for only the instance on which the attribute is set.
  */
-public class StyledPlayerView extends FrameLayout implements AdViewProvider {
+public class StyledPlayerView extends FrameLayout{
 
     /**
      * Determines when the buffering view is shown. One of {@link #SHOW_BUFFERING_NEVER}, {@link
@@ -635,7 +634,7 @@ public class StyledPlayerView extends FrameLayout implements AdViewProvider {
                 updateAspectRatio();
             }
             if (subtitleView != null && player.isCommandAvailable(COMMAND_GET_TEXT)) {
-                subtitleView.setCues(player.getCurrentCues());
+                subtitleView.setCues(player.getCurrentCues().cues);
             }
             player.addListener(componentListener);
             maybeShowController(false);
@@ -1286,32 +1285,6 @@ public class StyledPlayerView extends FrameLayout implements AdViewProvider {
         }
     }
 
-    // AdsLoader.AdViewProvider implementation.
-
-    @Override
-    public ViewGroup getAdViewGroup() {
-        return Assertions.checkStateNotNull(
-                adOverlayFrameLayout, "exo_ad_overlay must be present for ad playback");
-    }
-
-    @Override
-    public List<AdOverlayInfo> getAdOverlayInfos() {
-        List<AdOverlayInfo> overlayViews = new ArrayList<>();
-        if (overlayFrameLayout != null) {
-            overlayViews.add(
-                    new AdOverlayInfo(
-                            overlayFrameLayout,
-                            AdOverlayInfo.PURPOSE_NOT_VISIBLE,
-                            /* detailedReason= */ "Transparent overlay does not impact viewability"));
-        }
-        if (controller != null) {
-            overlayViews.add(new AdOverlayInfo(controller, AdOverlayInfo.PURPOSE_CONTROLS));
-        }
-        return ImmutableList.copyOf(overlayViews);
-    }
-
-    // Internal methods.
-
     private boolean useController() {
         if (useController) {
             Assertions.checkStateNotNull(controller);
@@ -1385,7 +1358,7 @@ public class StyledPlayerView extends FrameLayout implements AdViewProvider {
 
     private void updateForCurrentTrackSelections(boolean isNewPlayer) {
         @Nullable Player player = this.player;
-        if (player == null || player.getCurrentTracksInfo().getTrackGroupInfos().isEmpty()) {
+        if (player == null) {
             if (!keepContentOnPlayerReset) {
                 hideArtwork();
                 closeShutter();
@@ -1396,13 +1369,6 @@ public class StyledPlayerView extends FrameLayout implements AdViewProvider {
         if (isNewPlayer && !keepContentOnPlayerReset) {
             // Hide any video from the previous player.
             closeShutter();
-        }
-
-        if (player.getCurrentTracksInfo().isTypeSelected(C.TRACK_TYPE_VIDEO)) {
-            // Video enabled, so artwork must be hidden. If the shutter is closed, it will be opened
-            // in onRenderedFirstFrame().
-            hideArtwork();
-            return;
         }
 
         // Video disabled so the shutter must be closed.
@@ -1628,34 +1594,6 @@ public class StyledPlayerView extends FrameLayout implements AdViewProvider {
             if (shutterView != null) {
                 shutterView.setVisibility(INVISIBLE);
             }
-        }
-
-        @Override
-        public void onTracksInfoChanged(TracksInfo tracksInfo) {
-            // Suppress the update if transitioning to an unprepared period within the same window. This
-            // is necessary to avoid closing the shutter when such a transition occurs. See:
-            // https://github.com/google/ExoPlayer/issues/5507.
-            Player player = checkNotNull(StyledPlayerView.this.player);
-            Timeline timeline = player.getCurrentTimeline();
-            if (timeline.isEmpty()) {
-                lastPeriodUidWithTracks = null;
-            } else if (!player.getCurrentTracksInfo().getTrackGroupInfos().isEmpty()) {
-                lastPeriodUidWithTracks =
-                        timeline.getPeriod(player.getCurrentPeriodIndex(), period, /* setIds= */ true).uid;
-            } else if (lastPeriodUidWithTracks != null) {
-                int lastPeriodIndexWithTracks = timeline.getIndexOfPeriod(lastPeriodUidWithTracks);
-                if (lastPeriodIndexWithTracks != C.INDEX_UNSET) {
-                    int lastWindowIndexWithTracks =
-                            timeline.getPeriod(lastPeriodIndexWithTracks, period).windowIndex;
-                    if (player.getCurrentMediaItemIndex() == lastWindowIndexWithTracks) {
-                        // We're in the same media item. Suppress the update.
-                        return;
-                    }
-                }
-                lastPeriodUidWithTracks = null;
-            }
-
-            updateForCurrentTrackSelections(/* isNewPlayer= */ false);
         }
 
         @Override

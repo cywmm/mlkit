@@ -32,7 +32,12 @@ public final class FfmpegLibrary {
 
   private static final String TAG = "FfmpegLibrary";
 
-  private static final LibraryLoader LOADER = new LibraryLoader("ffmpegJNI");
+  private static final LibraryLoader LOADER = new LibraryLoader("ffmpegJNI") {
+    @Override
+    protected void loadLibrary(String name) {
+
+    }
+  };
 
   private static String version;
   private static int inputBufferPaddingSize = C.LENGTH_UNSET;

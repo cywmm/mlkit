@@ -21,6 +21,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.blankj.utilcode.util.FileUtils;
 import com.google.android.gms.tasks.Task;
 import com.google.android.odml.image.MlImage;
 import com.google.gson.Gson;
@@ -36,7 +37,12 @@ import com.google.mlkit.vision.pose.PoseDetector;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
 import com.google.mlkit.vision.pose.PoseLandmark;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -47,7 +53,7 @@ import java.util.concurrent.Executors;
 public class PoseDetectorVideoProcessor
         extends VisionVideoProcessorBase<PoseDetectorVideoProcessor.PoseWithClassification> {
     private static final String TAG = "PoseDetectorProcessor";
-    private ArrayList<List<PosePoint>> savePose = new ArrayList();
+    public LinkedHashMap<Long, List<PosePoint>> savePose = new LinkedHashMap<>();
 
     private final PoseDetector detector;
 
@@ -160,8 +166,24 @@ public class PoseDetectorVideoProcessor
                         rescaleZForVisualization,
                         poseWithClassification.classificationResult));
         List<PoseLandmark> allPoseLandmarks = poseWithClassification.pose.getAllPoseLandmarks();
-        if (allPoseLandmarks.size() >= 33)
-            AngleUtils.INSTANCE.setCurrentPoint(AngleUtils.INSTANCE.to15Point(allPoseLandmarks));
+        if (allPoseLandmarks.size() >= 33) {
+            ArrayList<PosePoint> referencePoint = AngleUtils.INSTANCE.to15Point(allPoseLandmarks);
+            if (isSave) {
+                savePose.put(timeKey, referencePoint);
+                Log.d(TAG, "onSuccess: " + go.toJson(savePose));
+            }
+            AngleUtils.INSTANCE.setCurrentPoint(referencePoint);
+        }
+    }
+
+    public void saveToJson(String path) throws IOException {
+        File file = new File("/sdcard/DCIM" , path);
+        FileOutputStream stream = new FileOutputStream(file);
+        try {
+            stream.write(go.toJson(savePose).getBytes());
+        } finally {
+            stream.close();
+        }
     }
 
     @Override

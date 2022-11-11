@@ -2,24 +2,34 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end|top"
+    android:background="#00000000"
     android:keepScreenOn="true">
+
+    <com.google.android.exoplayer2.ui.StyledPlayerView
+        android:id="@+id/player_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.mlkit.vision.demo.CameraSourcePreview
         android:id="@+id/preview_view"
         android:layout_width="640dp"
         android:layout_height="480dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-<!--    <fragment-->
-<!--        android:id="@+id/ff"-->
-<!--        android:name="com.google.mlkit.vision.demo.video.VideoTextureViewActivity"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:layout_constraintRight_toLeftOf="@id/control"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
+    <!--    <fragment-->
+    <!--        android:id="@+id/ff"-->
+    <!--        android:name="com.google.mlkit.vision.demo.video.VideoTextureViewActivity"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:layout_constraintRight_toLeftOf="@id/control"-->
+    <!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <com.google.mlkit.vision.demo.GraphicOverlay
         android:id="@+id/graphic_overlay"
@@ -33,8 +43,10 @@
     <FrameLayout
         android:id="@id/control"
         android:layout_width="100dp"
-        android:layout_height="match_parent"
-        android:background="#000"
+        android:layout_height="wrap_content"
+        android:background="#00000000"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <Spinner
@@ -97,7 +109,6 @@
         android:textColor="@color/colorAccent"
         android:textSize="40sp"
         android:textStyle="bold"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

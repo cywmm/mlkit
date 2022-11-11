@@ -55,7 +55,7 @@
         <activity
             android:name=".java.LivePreviewActivity"
             android:exported="false"
-            android:theme="@style/AppTheme">
+            android:theme="@style/dialog_style">
         </activity>
 
         <activity
@@ -84,6 +84,7 @@
         <activity
             android:name=".kotlin.LivePreviewActivity"
             android:exported="false"
+            android:hardwareAccelerated="true"
             android:theme="@style/AppTheme">
         </activity>
 
@@ -111,9 +112,8 @@
 
         <activity
             android:name=".video.VideoTextureViewActivity"
-            android:exported="true"
-            android:process=":adbbdd"
-            android:theme="@style/dialog_style"/>
+
+            android:exported="true"/>
 
     </application>
     <queries>

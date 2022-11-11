@@ -90,7 +90,7 @@ public abstract class VisionVideoProcessorBase<T> implements VisionVideoProcesso
     private int frameProcessedInOneSecondInterval = 0;
     private int framesPerSecond = 0;
     public boolean isSave = false;
-
+    public long timeKey = -1;
     // To keep the latest images and its metadata.
     @GuardedBy("this")
     private ByteBuffer latestImage;
@@ -150,8 +150,9 @@ public abstract class VisionVideoProcessorBase<T> implements VisionVideoProcesso
     }
 
     @Override
-    public void processBitmap(Bitmap bitmap, GraphicOverlay graphicOverlay, boolean isSave) {
+    public void processBitmap(Bitmap bitmap, GraphicOverlay graphicOverlay, boolean isSave,long timeKey) {
         this.isSave = isSave;
+        this.timeKey = timeKey;
         processBitmap(bitmap, graphicOverlay);
     }
 

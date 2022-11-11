@@ -9,18 +9,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.aidong.media.video.StyledPlayerView;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.google.mlkit.vision.demo.GraphicOverlay;
 import com.google.mlkit.vision.demo.R;
+import com.google.mlkit.vision.demo.kotlin.LivePreviewActivity;
 import com.google.mlkit.vision.demo.preference.PreferenceUtils;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
 import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions;
@@ -34,9 +37,10 @@ public abstract class VideoBaseActivity extends Activity {
     private GraphicOverlay graphicOverlay;
     private ExoPlayer player;
     private StyledPlayerView playerView;
+    private Button start;
 //    private VideoView playerView;
 
-    private VisionVideoProcessorBase imageProcessor;
+    public PoseDetectorVideoProcessor imageProcessor;
     private String selectedProcessor = SELFIE_POSE;
 
     private int frameWidth, frameHeight;
@@ -44,8 +48,10 @@ public abstract class VideoBaseActivity extends Activity {
     private boolean processing;
     private boolean pending;
     private Bitmap lastFrame;
-//    private final Uri parse = Uri.parse("/sdcard/DCIM/Videos/Output.mp4/sdcard/DCIM/Videos/Output.mp4/sdcard/DCIM/Videos/Output.mp4");
+    public ImageView preView;
+    //    private final Uri parse = Uri.parse("/sdcard/DCIM/output1.mp4");
     private final Uri parse = Uri.parse("https://online-resources.oss-cn-shanghai.aliyuncs.com/VIRTUAL/AI/16x9/hls/A1/resource.m3u8");
+//    private final Uri parse = Uri.parse("https://online-resources.oss-cn-shanghai.aliyuncs.com/VIRTUAL/AI/16x9/hls/05YJCJA1001/resource.m3u8");
 
 
     @Override
@@ -56,15 +62,24 @@ public abstract class VideoBaseActivity extends Activity {
         player = createPlayer();
 
         playerView = findViewById(R.id.player_view);
+        start = findViewById(R.id.vvvvv);
+        preView = findViewById(R.id.preView);
         graphicOverlay = findViewById(R.id.graphic_overlay2);
 
         playerView.setPlayer(player);
-        player.setRepeatMode(Player.REPEAT_MODE_ONE);
-//        FrameLayout contentFrame = playerView.findViewById(R.id.exo_content_frame);
-//        View videoFrameView = createVideoFrameView();
-//        if (videoFrameView != null) contentFrame.addView(videoFrameView);
+//        player.setRepeatMode(Player.REPEAT_MODE_ONE);
+        FrameLayout contentFrame = playerView.findViewById(R.id.exo_content_frame);
+        View videoFrameView = createVideoFrameView();
+        if (videoFrameView != null) contentFrame.addView(videoFrameView);
 
         setupPlayer(parse);
+
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(VideoBaseActivity.this, LivePreviewActivity.class));
+            }
+        });
     }
 //    @Nullable
 //    @Override
@@ -115,7 +130,8 @@ public abstract class VideoBaseActivity extends Activity {
         return null;
     }
 
-    protected void processFrame(Bitmap frame, boolean isSave) {
+    protected void processFrame(Bitmap frame, boolean isSave, long timeKey) {
+        Log.d("PoseDetectorProcessor", "onDrawFrame: " + isSave + "--" + timeKey);
         lastFrame = frame;
         if (imageProcessor != null) {
             pending = processing;
@@ -129,10 +145,10 @@ public abstract class VideoBaseActivity extends Activity {
                 imageProcessor.setOnProcessingCompleteListener(() -> {
                     processing = false;
                     onProcessComplete(frame);
-                    if (pending) processFrame(lastFrame, isSave);
+                    if (pending) processFrame(lastFrame, isSave, timeKey);
                 });
 //                imageProcessor.processBitmap(frame, graphicOverlay);
-                imageProcessor.processBitmap(frame, graphicOverlay, isSave);
+                imageProcessor.processBitmap(frame, graphicOverlay, isSave, timeKey);
             }
         }
     }
@@ -143,7 +159,7 @@ public abstract class VideoBaseActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-//        createImageProcessor();
+        createImageProcessor();
 
     }
 
@@ -151,7 +167,7 @@ public abstract class VideoBaseActivity extends Activity {
     public void onPause() {
         super.onPause();
         player.pause();
-//        stopImageProcessor();
+        stopImageProcessor();
     }
 
     @Override

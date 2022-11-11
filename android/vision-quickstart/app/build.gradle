@@ -142,6 +142,7 @@ dependencies {
     implementation "com.google.android.odml:image:1.0.0-beta1"
 
     implementation project(':lib-media')
+    implementation 'com.blankj:utilcodex:1.30.6'
 }
 
 configurations {

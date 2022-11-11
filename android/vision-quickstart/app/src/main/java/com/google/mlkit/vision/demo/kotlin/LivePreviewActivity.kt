@@ -18,13 +18,22 @@ package com.google.mlkit.vision.demo.kotlin
 
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
 import androidx.appcompat.app.AppCompatActivity
+import com.blankj.utilcode.util.GsonUtils
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.gms.common.annotation.KeepName
+import com.google.gson.reflect.TypeToken
 import com.google.mlkit.common.model.LocalModel
 import com.google.mlkit.vision.demo.*
 import com.google.mlkit.vision.demo.kotlin.barcodescanner.BarcodeScannerProcessor
@@ -49,11 +58,15 @@ import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.io.IOException
 
+
 /** Live preview demo for ML Kit APIs. */
 @KeepName
 class LivePreviewActivity :
-    AppCompatActivity(), OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
-
+    AppCompatActivity(), OnItemSelectedListener, CompoundButton.OnCheckedChangeListener, Runnable,
+    Player.Listener {
+    private var fromJson: HashMap<Long, ArrayList<PosePoint>>? = null
+    private var player: ExoPlayer? = null
+    private var playerView: StyledPlayerView? = null
     private var cameraSource: CameraSource? = null
     private var preview: CameraSourcePreview? = null
     private var graphicOverlay: GraphicOverlay? = null
@@ -63,6 +76,10 @@ class LivePreviewActivity :
     private var progressBar: ProgressBar? = null
     private var selectedModel = OBJECT_DETECTION
     private var referencePoint = arrayListOf<PosePoint>()
+    private val parse =
+        Uri.parse("/sdcard/DCIM/test.mp4")
+//    private val parse =
+//        Uri.parse("https://online-resources.oss-cn-shanghai.aliyuncs.com/VIRTUAL/AI/16x9/hls/A1/resource.m3u8")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +89,9 @@ class LivePreviewActivity :
 //        initReference()
 
         preview = findViewById(R.id.preview_view)
+        playerView = findViewById(R.id.player_view)
+        initPlayer()
+
         btnStart = findViewById(R.id.btn_start)
         tvScore = findViewById(R.id.tv_score)
         tvCount = findViewById(R.id.tv_count)
@@ -125,11 +145,24 @@ class LivePreviewActivity :
             startActivity(intent)
         }
 
-        createCameraSource(selectedModel)
+//        createCameraSource(selectedModel)
 
         btnStart?.setOnClickListener {
             startActivity(Intent(this, VideoTextureViewActivity::class.java))
         }
+
+        uploadConfigJson()
+    }
+
+    private fun initPlayer() {
+        player = ExoPlayer.Builder(this).build()
+        player?.addListener(this)
+        playerView?.player = player
+        val mediaItem: MediaItem = MediaItem.fromUri(parse)
+        player?.stop()
+        player?.setMediaItem(mediaItem)
+        player?.prepare()
+        player?.play()
     }
 
     //[PosePoint(x=683.0867, y=499.22522), PosePoint(x=685.8696, y=609.0366), PosePoint(x=575.3723, y=610.8174), PosePoint(x=521.52954, y=387.92426),
@@ -165,7 +198,7 @@ class LivePreviewActivity :
         selectedModel = parent?.getItemAtPosition(pos).toString()
         Log.d(TAG, "Selected model: $selectedModel")
         preview?.stop()
-        createCameraSource(POSE_DETECTION)
+        createCameraSource(selectedModel)
         startCameraSource()
     }
 
@@ -418,6 +451,21 @@ class LivePreviewActivity :
         }
     }
 
+    fun uploadConfigJson() {
+        val text = resources.openRawResource(R.raw.test001002).bufferedReader()
+            .use { it.readText() }
+
+        Log.d(TAG, "getCourseList: $text")
+
+        val mapType = object : TypeToken<HashMap<Long, List<PosePoint>>>() {}
+//        val gson = Gson()
+//        val savePose : TypeToken<Map<Long, List<PosePoint>>> = gson.fromJson(text, mapType::class.java).
+
+        fromJson = GsonUtils.fromJson(text, mapType.type)
+
+        Log.d(TAG, "uploadConfigJson: ${fromJson?.get(3)}")
+    }
+
     companion object {
         private const val OBJECT_DETECTION = "Object Detection"
         private const val OBJECT_DETECTION_CUSTOM = "Custom Object Detection"
@@ -437,5 +485,24 @@ class LivePreviewActivity :
         private const val FACE_MESH_DETECTION = "Face Mesh Detection (Beta)";
 
         private const val TAG = "LivePreviewActivity"
+    }
+
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        if (isPlaying) {
+            handler.postDelayed(this, 0L)
+        }
+    }
+
+    private val handler = Handler(Looper.getMainLooper())
+
+    override fun run() {
+        val currentPosition: Long? = player?.currentPosition?.div(1000)
+        currentPosition?.let { key ->
+            fromJson?.get(key + 1)?.let { points ->
+                Log.d(TAG, "run: $currentPosition")
+                AngleUtils.setCurrentPoint(points)
+            }
+        }
+        handler.postDelayed(this, 500)
     }
 }
