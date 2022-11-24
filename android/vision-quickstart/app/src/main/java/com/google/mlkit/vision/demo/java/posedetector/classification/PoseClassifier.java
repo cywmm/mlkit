@@ -102,7 +102,7 @@ public class PoseClassifier {
 
     // Classification is done in two stages:
     //  * First we pick top-K samples by MAX distance. It allows to remove samples that are almost
-    //    the same as given pose, but maybe has few joints bent in the other direction.
+    //    the same as given pose.kt, but maybe has few joints bent in the other direction.
     //  * Then we pick top-K samples by MEAN distance. After outliers are removed, we pick samples
     //    that are closest by average.
 

@@ -1,5 +1,7 @@
 package com.google.mlkit.vision.demo
 
+import android.graphics.Point
+import android.graphics.PointF
 import android.util.Log
 import com.google.mlkit.vision.demo.kotlin.entity.PosePoint
 import com.google.mlkit.vision.pose.PoseLandmark
@@ -104,14 +106,43 @@ object AngleUtils {
                 allPoseLandmarks[27].position3D.y
             )
         )
-        //肚脐
-        val poseNavelX =
-            (allPoseLandmarks[23].position.x - allPoseLandmarks[24].position.x) / 2
-        val poseNavelY = allPoseLandmarks[23].position.y
-        val navelPoseLandmark = PosePoint(poseNavelX, poseNavelY)
+        //肚脐（双肩与双髋关节对角连线相交点）
+        val navelPointF = lineLineIntersection(
+            allPoseLandmarks[12].position,
+            allPoseLandmarks[23].position,
+            allPoseLandmarks[11].position,
+            allPoseLandmarks[24].position
+        )
+        val navelPoseLandmark = PosePoint(navelPointF.x, navelPointF.y)
         poses.add(navelPoseLandmark)
 
         return poses
+    }
+
+
+    fun lineLineIntersection(a: PointF, b: PointF, c: PointF, d: PointF): PointF {
+        // Line AB represented as a1x + b1y = c1
+        val a1 = (b.y - a.y)
+        val b1 = (a.x - b.x)
+        val c1 = a1 * a.x + b1 * a.y
+
+        // Line CD represented as a2x + b2y = c2
+        val a2 = (d.y - c.y)
+        val b2 = (c.x - d.x)
+        val c2 = a2 * c.x + b2 * c.y
+        val determinant = a1 * b2 - a2 * b1
+        return if (determinant == 0.0F) {
+            // The lines are parallel. This is simplified
+            // by returning a pair of FLT_MAX
+            PointF(
+                Float.MAX_VALUE,
+                Float.MAX_VALUE
+            )
+        } else {
+            val x = (b2 * c1 - b1 * c2) / determinant
+            val y = (a1 * c2 - a2 * c1) / determinant
+            PointF(x, y)
+        }
     }
 
     fun getTrunkPoseAngles(referencePoint: ArrayList<PosePoint>): ArrayList<Double> {
@@ -124,10 +155,10 @@ object AngleUtils {
         trunkPoseAngles.add(getAngle(referencePoint[8], referencePoint[9], referencePoint[10]))
         trunkPoseAngles.add(getAngle(referencePoint[14], referencePoint[11], referencePoint[12]))
         trunkPoseAngles.add(getAngle(referencePoint[11], referencePoint[12], referencePoint[13]))
-        trunkPoseAngles.add(getAngle(referencePoint[8], referencePoint[14], referencePoint[11]))
+//        trunkPoseAngles.add(getAngle(referencePoint[8], referencePoint[14], referencePoint[11]))
 
-        trunkPoseAngles.add(getAngle(referencePoint[4], referencePoint[14], referencePoint[1]))
-        trunkPoseAngles.add(getAngle(referencePoint[7], referencePoint[14], referencePoint[1]))
+//        trunkPoseAngles.add(getAngle(referencePoint[4], referencePoint[14], referencePoint[1]))
+//        trunkPoseAngles.add(getAngle(referencePoint[7], referencePoint[14], referencePoint[1]))
 
         trunkPoseAngles.add(getAngle(referencePoint[2], referencePoint[5], referencePoint[11]))
         trunkPoseAngles.add(getAngle(referencePoint[5], referencePoint[2], referencePoint[8]))
@@ -187,6 +218,8 @@ object AngleUtils {
         referPoseAngles: ArrayList<Double>,
         trunkPoseAngles: ArrayList<Double>
     ): Double {
+        Log.d(TAG, "getPoseScore1111: $referPoseAngles")
+        Log.d(TAG, "getPoseScore2222: $trunkPoseAngles")
         val trunkScore = arrayListOf<Double>()
         referPoseAngles.forEachIndexed { index, d ->
             val isSame = trunkPoseAngles[index] * d > 0

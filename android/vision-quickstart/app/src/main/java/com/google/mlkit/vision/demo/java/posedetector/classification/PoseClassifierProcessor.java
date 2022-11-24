@@ -40,7 +40,7 @@ public class PoseClassifierProcessor {
 
   // Specify classes for which we want rep counting.
   // These are the labels in the given {@code POSE_SAMPLES_FILE}. You can set your own class labels
-  // for your pose samples.
+  // for your pose.kt samples.
   private static final String PUSHUPS_CLASS = "pushups_down";
   private static final String SQUATS_CLASS = "squats_down";
   private static final String[] POSE_CLASSES = {
@@ -81,7 +81,7 @@ public class PoseClassifierProcessor {
         csvLine = reader.readLine();
       }
     } catch (IOException e) {
-      Log.e(TAG, "Error when loading pose samples.\n" + e);
+      Log.e(TAG, "Error when loading pose.kt samples.\n" + e);
     }
     poseClassifier = new PoseClassifier(poseSamples);
     if (isStreamMode) {
@@ -107,10 +107,10 @@ public class PoseClassifierProcessor {
 
     // Update {@link RepetitionCounter}s if {@code isStreamMode}.
     if (isStreamMode) {
-      // Feed pose to smoothing even if no pose found.
+      // Feed pose.kt to smoothing even if no pose.kt found.
       classification = emaSmoothing.getSmoothedResult(classification);
 
-      // Return early without updating repCounter if no pose found.
+      // Return early without updating repCounter if no pose.kt found.
       if (pose.getAllPoseLandmarks().isEmpty()) {
         result.add(lastRepResult);
         return result;
@@ -131,7 +131,7 @@ public class PoseClassifierProcessor {
       result.add(lastRepResult);
     }
 
-    // Add maxConfidence class of current frame to result if pose is found.
+    // Add maxConfidence class of current frame to result if pose.kt is found.
     if (!pose.getAllPoseLandmarks().isEmpty()) {
       String maxConfidenceClass = classification.getMaxConfidenceClass();
       String maxConfidenceClassResult = String.format(

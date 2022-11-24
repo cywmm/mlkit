@@ -55,7 +55,7 @@ public class PoseEmbedding {
 
   // Translation normalization should've been done prior to calling this method.
   private static float getPoseSize(List<PointF3D> landmarks) {
-    // Note: This approach uses only 2D landmarks to compute pose size as using Z wasn't helpful
+    // Note: This approach uses only 2D landmarks to compute pose.kt size as using Z wasn't helpful
     // in our experimentation but you're welcome to tweak.
     PointF3D hipsCenter = average(
         landmarks.get(PoseLandmark.LEFT_HIP), landmarks.get(PoseLandmark.RIGHT_HIP));
@@ -68,7 +68,7 @@ public class PoseEmbedding {
 
     float maxDistance = torsoSize * TORSO_MULTIPLIER;
     // torsoSize * TORSO_MULTIPLIER is the floor we want based on experimentation but actual size
-    // can be bigger for a given pose depending on extension of limbs etc so we calculate that.
+    // can be bigger for a given pose.kt depending on extension of limbs etc so we calculate that.
     for (PointF3D landmark : landmarks) {
       float distance = l2Norm2D(subtract(hipsCenter, landmark));
       if (distance > maxDistance) {
@@ -81,9 +81,9 @@ public class PoseEmbedding {
   private static List<PointF3D> getEmbedding(List<PointF3D> lm) {
     List<PointF3D> embedding = new ArrayList<>();
 
-    // We use several pairwise 3D distances to form pose embedding. These were selected
-    // based on experimentation for best results with our default pose classes as captued in the
-    // pose samples csv. Feel free to play with this and add or remove for your use-cases.
+    // We use several pairwise 3D distances to form pose.kt embedding. These were selected
+    // based on experimentation for best results with our default pose.kt classes as captued in the
+    // pose.kt samples csv. Feel free to play with this and add or remove for your use-cases.
 
     // We group our distances by number of joints between the pairs.
     // One joint.

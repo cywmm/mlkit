@@ -28,7 +28,7 @@ import static java.util.Collections.max;
 public class ClassificationResult {
   // For an entry in this map, the key is the class name, and the value is how many times this class
   // appears in the top K nearest neighbors. The value is in range [0, K] and could be a float after
-  // EMA smoothing. We use this number to represent the confidence of a pose being in this class.
+  // EMA smoothing. We use this number to represent the confidence of a pose.kt being in this class.
   private final Map<String, Float> classConfidences;
 
   public ClassificationResult() {

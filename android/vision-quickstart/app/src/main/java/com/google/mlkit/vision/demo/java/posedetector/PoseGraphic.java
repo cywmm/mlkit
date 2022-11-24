@@ -30,7 +30,7 @@ import com.google.mlkit.vision.pose.PoseLandmark;
 import java.util.List;
 import java.util.Locale;
 
-/** Draw the detected pose in preview. */
+/** Draw the detected pose.kt in preview. */
 public class PoseGraphic extends Graphic {
 
   private static final float DOT_RADIUS = 8.0f;
@@ -89,7 +89,7 @@ public class PoseGraphic extends Graphic {
       return;
     }
 
-    // Draw pose classification text.
+    // Draw pose.kt classification text.
     float classificationX = POSE_CLASSIFICATION_TEXT_SIZE * 0.5f;
     for (int i = 0; i < poseClassification.size(); i++) {
       float classificationY =

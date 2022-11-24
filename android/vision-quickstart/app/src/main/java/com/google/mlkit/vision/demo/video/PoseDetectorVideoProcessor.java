@@ -48,7 +48,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
- * A processor to run pose detector.
+ * A processor to run pose.kt detector.
  */
 public class PoseDetectorVideoProcessor
         extends VisionVideoProcessorBase<PoseDetectorVideoProcessor.PoseWithClassification> {

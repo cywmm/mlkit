@@ -33,7 +33,7 @@ import com.google.mlkit.vision.pose.PoseDetectorOptionsBase
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-/** A processor to run pose detector. */
+/** A processor to run pose.kt detector. */
 class PoseDetectorProcessor(
     private val context: Context,
     options: PoseDetectorOptionsBase,

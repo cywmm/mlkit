@@ -141,8 +141,10 @@ dependencies {
     // On Device Machine Learnings
     implementation "com.google.android.odml:image:1.0.0-beta1"
 
-    implementation project(':lib-media')
+//    implementation project(':lib-media')
     implementation 'com.blankj:utilcodex:1.30.6'
+
+    implementation 'com.aidong.media:media:0.0.1'
 }
 
 configurations {

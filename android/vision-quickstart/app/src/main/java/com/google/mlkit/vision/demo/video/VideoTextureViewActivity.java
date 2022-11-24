@@ -69,7 +69,7 @@ public class VideoTextureViewActivity extends VideoBaseActivity implements Textu
         if (playbackState == Player.STATE_ENDED) {
             Log.d(TAG, "onPlaybackStateChanged: 播放结束");
             try {
-                imageProcessor.saveToJson("test002.json");
+                imageProcessor.saveToJson("test001.json");
             } catch (IOException e) {
                 Log.d(TAG, "onPlaybackStateChanged: " + e.getMessage());
                 e.printStackTrace();

@@ -49,8 +49,8 @@ public abstract class VideoBaseActivity extends Activity {
     private boolean pending;
     private Bitmap lastFrame;
     public ImageView preView;
-    //    private final Uri parse = Uri.parse("/sdcard/DCIM/output1.mp4");
-    private final Uri parse = Uri.parse("https://online-resources.oss-cn-shanghai.aliyuncs.com/VIRTUAL/AI/16x9/hls/A1/resource.m3u8");
+        private final Uri parse = Uri.parse("/sdcard/DCIM/test.mp4");
+//    private final Uri parse = Uri.parse("https://online-resources.oss-cn-shanghai.aliyuncs.com/VIRTUAL/AI/16x9/hls/A1/resource.m3u8");
 //    private final Uri parse = Uri.parse("https://online-resources.oss-cn-shanghai.aliyuncs.com/VIRTUAL/AI/16x9/hls/05YJCJA1001/resource.m3u8");
 
 

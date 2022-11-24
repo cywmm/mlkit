@@ -67,6 +67,7 @@ class LivePreviewActivity :
     private var fromJson: HashMap<Long, ArrayList<PosePoint>>? = null
     private var player: ExoPlayer? = null
     private var playerView: StyledPlayerView? = null
+    private var skView: SkeletonTextureView? = null
     private var cameraSource: CameraSource? = null
     private var preview: CameraSourcePreview? = null
     private var graphicOverlay: GraphicOverlay? = null
@@ -90,6 +91,7 @@ class LivePreviewActivity :
 
         preview = findViewById(R.id.preview_view)
         playerView = findViewById(R.id.player_view)
+        skView = findViewById(R.id.skView)
         initPlayer()
 
         btnStart = findViewById(R.id.btn_start)
@@ -452,7 +454,7 @@ class LivePreviewActivity :
     }
 
     fun uploadConfigJson() {
-        val text = resources.openRawResource(R.raw.test001002).bufferedReader()
+        val text = resources.openRawResource(R.raw.test001).bufferedReader()
             .use { it.readText() }
 
         Log.d(TAG, "getCourseList: $text")
@@ -500,6 +502,7 @@ class LivePreviewActivity :
         currentPosition?.let { key ->
             fromJson?.get(key + 1)?.let { points ->
                 Log.d(TAG, "run: $currentPosition")
+//                graphicOverlay?.let { skView?.drawSkeleton(points, it) }
                 AngleUtils.setCurrentPoint(points)
             }
         }

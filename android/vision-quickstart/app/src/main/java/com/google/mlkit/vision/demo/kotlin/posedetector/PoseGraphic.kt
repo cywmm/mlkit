@@ -27,7 +27,7 @@ import java.lang.Math.max
 import java.lang.Math.min
 import java.util.Locale
 
-/** Draw the detected pose in preview. */
+/** Draw the detected pose.kt in preview. */
 class PoseGraphic
 internal constructor(
   overlay: GraphicOverlay,
@@ -68,7 +68,7 @@ internal constructor(
       return
     }
 
-    // Draw pose classification text.
+    // Draw pose.kt classification text.
     val classificationX = POSE_CLASSIFICATION_TEXT_SIZE * 0.5f
     for (i in poseClassification.indices) {
       val classificationY =

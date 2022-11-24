@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
- * Runs EMA smoothing over a window with given stream of pose classification results.
+ * Runs EMA smoothing over a window with given stream of pose.kt classification results.
  */
 public class EMASmoothing {
   private static final int DEFAULT_WINDOW_SIZE = 10;
