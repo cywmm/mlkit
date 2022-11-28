@@ -17,19 +17,18 @@
 package com.google.mlkit.vision.demo.video;
 
 import android.content.Context;
+import android.graphics.PointF;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.blankj.utilcode.util.FileUtils;
 import com.google.android.gms.tasks.Task;
 import com.google.android.odml.image.MlImage;
 import com.google.gson.Gson;
 import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.demo.AngleUtils;
+import com.google.mlkit.vision.demo.PoseAngleUtils;
 import com.google.mlkit.vision.demo.GraphicOverlay;
 import com.google.mlkit.vision.demo.java.posedetector.classification.PoseClassifierProcessor;
-import com.google.mlkit.vision.demo.kotlin.entity.PosePoint;
 import com.google.mlkit.vision.demo.kotlin.posedetector.PoseGraphic;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseDetection;
@@ -40,7 +39,6 @@ import com.google.mlkit.vision.pose.PoseLandmark;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,7 +51,7 @@ import java.util.concurrent.Executors;
 public class PoseDetectorVideoProcessor
         extends VisionVideoProcessorBase<PoseDetectorVideoProcessor.PoseWithClassification> {
     private static final String TAG = "PoseDetectorProcessor";
-    public LinkedHashMap<Long, List<PosePoint>> savePose = new LinkedHashMap<>();
+    public LinkedHashMap<Long, List<PointF>> savePose = new LinkedHashMap<>();
 
     private final PoseDetector detector;
 
@@ -167,12 +165,12 @@ public class PoseDetectorVideoProcessor
                         poseWithClassification.classificationResult));
         List<PoseLandmark> allPoseLandmarks = poseWithClassification.pose.getAllPoseLandmarks();
         if (allPoseLandmarks.size() >= 33) {
-            ArrayList<PosePoint> referencePoint = AngleUtils.INSTANCE.to15Point(allPoseLandmarks);
+            ArrayList<PointF> referencePoint = PoseAngleUtils.INSTANCE.googleTo15Point(allPoseLandmarks);
             if (isSave) {
                 savePose.put(timeKey, referencePoint);
                 Log.d(TAG, "onSuccess: " + go.toJson(savePose));
             }
-            AngleUtils.INSTANCE.setCurrentPoint(referencePoint);
+            PoseAngleUtils.INSTANCE.setCurrentPoint(referencePoint);
         }
     }
 

@@ -18,6 +18,7 @@ package com.google.mlkit.vision.demo.kotlin
 
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.PointF
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -37,7 +38,6 @@ import com.google.gson.reflect.TypeToken
 import com.google.mlkit.common.model.LocalModel
 import com.google.mlkit.vision.demo.*
 import com.google.mlkit.vision.demo.kotlin.barcodescanner.BarcodeScannerProcessor
-import com.google.mlkit.vision.demo.kotlin.entity.PosePoint
 import com.google.mlkit.vision.demo.kotlin.facedetector.FaceDetectorProcessor
 import com.google.mlkit.vision.demo.kotlin.facemeshdetector.FaceMeshDetectorProcessor
 import com.google.mlkit.vision.demo.kotlin.labeldetector.LabelDetectorProcessor
@@ -64,7 +64,7 @@ import java.io.IOException
 class LivePreviewActivity :
     AppCompatActivity(), OnItemSelectedListener, CompoundButton.OnCheckedChangeListener, Runnable,
     Player.Listener {
-    private var fromJson: HashMap<Long, ArrayList<PosePoint>>? = null
+    private var fromJson: HashMap<Long, ArrayList<PointF>>? = null
     private var player: ExoPlayer? = null
     private var playerView: StyledPlayerView? = null
     private var skView: SkeletonTextureView? = null
@@ -76,7 +76,7 @@ class LivePreviewActivity :
     private var btnStart: Button? = null
     private var progressBar: ProgressBar? = null
     private var selectedModel = OBJECT_DETECTION
-    private var referencePoint = arrayListOf<PosePoint>()
+    private var referencePoint = arrayListOf<PointF>()
     private val parse =
         Uri.parse("/sdcard/DCIM/test.mp4")
 //    private val parse =
@@ -174,23 +174,23 @@ class LivePreviewActivity :
 // PosePoint(x=78.929565, y=1056.8763)]
     //[[285,351],[305,411],[225,430],[205,252],[205,113],[386,430],[406,252],[346,113],[245,747],[185,965],[125,1164],[366,747],[406,965],[486,1164],[305,747]]
     fun initReference() {
-        referencePoint.add(PosePoint(683.0867f, 499.22522f))
-        referencePoint.add(PosePoint(685.8696f, 609.0366f))
-        referencePoint.add(PosePoint(575.3723f, 610.8174f))
-        referencePoint.add(PosePoint(521.52954f, 387.92426f))
-        referencePoint.add(PosePoint(558.9225f, 182.77542f))
-        referencePoint.add(PosePoint(796.3669f, 609.0366f))
-        referencePoint.add(PosePoint(828.1503f, 385.0948f))
-        referencePoint.add(PosePoint(758.04297f, 171.56828f))
-        referencePoint.add(PosePoint(612.2182f, 1060.6664f))
-        referencePoint.add(PosePoint(529.2148f, 1380.1406f))
-        referencePoint.add(PosePoint(444.61377f, 1671.9271f))
-        referencePoint.add(PosePoint(770.07733f, 1056.8763f))
-        referencePoint.add(PosePoint(860.23474f, 1385.1187f))
-        referencePoint.add(PosePoint(951.6639f, 1669.7156f))
-        referencePoint.add(PosePoint(78.929565f, 1056.8763f))
-        AngleUtils.setCurrentPoint(referencePoint)
-        Log.d(TAG, "initReference: ${AngleUtils.trunkPoseAngles}")
+        referencePoint.add(PointF(683.0867f, 499.22522f))
+        referencePoint.add(PointF(685.8696f, 609.0366f))
+        referencePoint.add(PointF(575.3723f, 610.8174f))
+        referencePoint.add(PointF(521.52954f, 387.92426f))
+        referencePoint.add(PointF(558.9225f, 182.77542f))
+        referencePoint.add(PointF(796.3669f, 609.0366f))
+        referencePoint.add(PointF(828.1503f, 385.0948f))
+        referencePoint.add(PointF(758.04297f, 171.56828f))
+        referencePoint.add(PointF(612.2182f, 1060.6664f))
+        referencePoint.add(PointF(529.2148f, 1380.1406f))
+        referencePoint.add(PointF(444.61377f, 1671.9271f))
+        referencePoint.add(PointF(770.07733f, 1056.8763f))
+        referencePoint.add(PointF(860.23474f, 1385.1187f))
+        referencePoint.add(PointF(951.6639f, 1669.7156f))
+        referencePoint.add(PointF(78.929565f, 1056.8763f))
+        PoseAngleUtils.setCurrentPoint(referencePoint)
+        Log.d(TAG, "initReference: ${PoseAngleUtils.trunkPoseAngles}")
     }
 
     @Synchronized
@@ -459,7 +459,7 @@ class LivePreviewActivity :
 
         Log.d(TAG, "getCourseList: $text")
 
-        val mapType = object : TypeToken<HashMap<Long, List<PosePoint>>>() {}
+        val mapType = object : TypeToken<HashMap<Long, List<PointF>>>() {}
 //        val gson = Gson()
 //        val savePose : TypeToken<Map<Long, List<PosePoint>>> = gson.fromJson(text, mapType::class.java).
 
@@ -503,7 +503,7 @@ class LivePreviewActivity :
             fromJson?.get(key + 1)?.let { points ->
                 Log.d(TAG, "run: $currentPosition")
 //                graphicOverlay?.let { skView?.drawSkeleton(points, it) }
-                AngleUtils.setCurrentPoint(points)
+                PoseAngleUtils.setCurrentPoint(points)
             }
         }
         handler.postDelayed(this, 500)

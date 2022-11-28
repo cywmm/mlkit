@@ -6,6 +6,7 @@ buildscript {
         mavenLocal()
         google()
         jcenter()
+        maven { url 'https://jitpack.io' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.3'
@@ -21,6 +22,10 @@ allprojects {
         mavenLocal()
         google()
         jcenter()
+        maven { url 'https://jitpack.io' }
+        maven {
+            url 'https://maven.aliyun.com/repository/public'
+        }
         maven {
             url = MAVEN_URL //私有的Maven库地址
             //allowInsecureProtocol = true//允许非https链接

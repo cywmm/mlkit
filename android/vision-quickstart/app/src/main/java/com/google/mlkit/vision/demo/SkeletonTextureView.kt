@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.TextureView
-import com.google.common.primitives.Ints
-import com.google.mlkit.vision.demo.kotlin.entity.PosePoint
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -57,7 +55,7 @@ class SkeletonTextureView : TextureView, TextureView.SurfaceTextureListener {
         isOpaque = false
     }
 
-    fun drawSkeleton(pose: ArrayList<PosePoint>?, overlay: GraphicOverlay) {
+    fun drawSkeleton(pose: ArrayList<PointF>?, overlay: GraphicOverlay) {
         this.overlay = overlay
         try {
             mCanvas = lockCanvas()
@@ -125,7 +123,7 @@ class SkeletonTextureView : TextureView, TextureView.SurfaceTextureListener {
         }
     }
 
-    private fun drawPoint(canvas: Canvas, posePoint: PosePoint, paint: Paint) {
+    private fun drawPoint(canvas: Canvas, posePoint: PointF, paint: Paint) {
         canvas.drawCircle(
             translateX(posePoint.x, overlay),
             translateY(posePoint.y, overlay),
@@ -136,8 +134,8 @@ class SkeletonTextureView : TextureView, TextureView.SurfaceTextureListener {
 
     private fun drawLine(
         canvas: Canvas,
-        start: PosePoint?,
-        end: PosePoint?,
+        start: PointF?,
+        end: PointF?,
         paint: Paint
     ) {
         if (start?.x == 0f && start.y == 0f) return

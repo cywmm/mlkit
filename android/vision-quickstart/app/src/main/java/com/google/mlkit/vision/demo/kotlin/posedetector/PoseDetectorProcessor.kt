@@ -22,7 +22,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
 import com.google.android.odml.image.MlImage
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.demo.AngleUtils
+import com.google.mlkit.vision.demo.PoseAngleUtils
 import com.google.mlkit.vision.demo.GraphicOverlay
 import com.google.mlkit.vision.demo.java.posedetector.classification.PoseClassifierProcessor
 import com.google.mlkit.vision.demo.kotlin.VisionProcessorBase
@@ -121,16 +121,19 @@ class PoseDetectorProcessor(
         //左边：140.99289:147.85149---右边：121.878944:196.83575
         //左边：140.8273:39.963863---右边：113.53857:108.80207
         if (allPoseLandmarks.size >= 33) {
-            val referencePoint = AngleUtils.to15Point(allPoseLandmarks)
+            val referencePoint = PoseAngleUtils.googleTo15Point(allPoseLandmarks)
             if (isStreamMode) {
+                val start = System.currentTimeMillis()
+                Log.d(TAG, "onSuccess: ")
                 score.postValue(
-                    AngleUtils.getPoseScore(
-                        AngleUtils.trunkPoseAngles,
-                        AngleUtils.getTrunkPoseAngles(referencePoint)
+                    PoseAngleUtils.getPoseScoreAngle(
+                        PoseAngleUtils.trunkPoseAngles,
+                        PoseAngleUtils.getPoseAngles(referencePoint)
                     )
                 )
+                Log.d(TAG, "onSuccess time: ${System.currentTimeMillis() - start}")
             } else {
-                AngleUtils.setCurrentPoint(AngleUtils.to15Point(allPoseLandmarks))
+                PoseAngleUtils.setCurrentPoint(PoseAngleUtils.googleTo15Point(allPoseLandmarks))
             }
 //        }
         }
