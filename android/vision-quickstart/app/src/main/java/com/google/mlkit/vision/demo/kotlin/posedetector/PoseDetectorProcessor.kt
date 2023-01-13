@@ -47,7 +47,7 @@ class PoseDetectorProcessor(
 
     private val detector: PoseDetector
     private val classificationExecutor: Executor
-    val score = MutableLiveData<Double>()
+    val score = MutableLiveData<Float>()
 
     private var poseClassifierProcessor: PoseClassifierProcessor? = null
 
@@ -119,16 +119,16 @@ class PoseDetectorProcessor(
 
         val allPoseLandmarks = poseWithClassification.pose.allPoseLandmarks
         if (allPoseLandmarks.size >= 33) {
-            val referencePoint = AngleUtils.to15Point(allPoseLandmarks)
             if (isStreamMode) {
                 score.postValue(
-                    AngleUtils.getPoseScore(
-                        AngleUtils.trunkPoseAngles,
-                        AngleUtils.getTrunkPoseAngles(referencePoint)
+                    AngleUtils.getGooglePoseScore(
+                        AngleUtils.googleRefer,
+                        allPoseLandmarks
                     )
                 )
             } else {
-                AngleUtils.setCurrentPoint(AngleUtils.to15Point(allPoseLandmarks))
+                AngleUtils.googleRefer.clear()
+                AngleUtils.googleRefer.addAll(allPoseLandmarks)
             }
         }
     }

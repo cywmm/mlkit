@@ -71,9 +71,6 @@ class LivePreviewActivity :
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
         setContentView(R.layout.activity_vision_live_preview)
-
-        initReference()
-
         preview = findViewById(R.id.preview_view)
         tvScore = findViewById(R.id.tv_score)
         if (preview == null) {
@@ -126,32 +123,6 @@ class LivePreviewActivity :
         }
 
         createCameraSource(selectedModel)
-    }
-
-    //[PosePoint(x=683.0867, y=499.22522), PosePoint(x=685.8696, y=609.0366), PosePoint(x=575.3723, y=610.8174), PosePoint(x=521.52954, y=387.92426),
-// PosePoint(x=558.9225, y=182.77542), PosePoint(x=796.3669, y=609.0366), PosePoint(x=828.1503, y=385.0948),
-// PosePoint(x=758.04297, y=171.56828), PosePoint(x=612.2182, y=1060.6664), PosePoint(x=529.2148, y=1380.1406)
-// , PosePoint(x=444.61377, y=1671.9271), PosePoint(x=770.07733, y=1056.8763), PosePoint(x=860.23474, y=1385.1187), PosePoint(x=951.6639, y=1669.7156),
-// PosePoint(x=78.929565, y=1056.8763)]
-    //[[285,351],[305,411],[225,430],[205,252],[205,113],[386,430],[406,252],[346,113],[245,747],[185,965],[125,1164],[366,747],[406,965],[486,1164],[305,747]]
-    fun initReference() {
-        referencePoint.add(PosePoint(683.0867f, 499.22522f))
-        referencePoint.add(PosePoint(685.8696f, 609.0366f))
-        referencePoint.add(PosePoint(575.3723f, 610.8174f))
-        referencePoint.add(PosePoint(521.52954f, 387.92426f))
-        referencePoint.add(PosePoint(558.9225f, 182.77542f))
-        referencePoint.add(PosePoint(796.3669f, 609.0366f))
-        referencePoint.add(PosePoint(828.1503f, 385.0948f))
-        referencePoint.add(PosePoint(758.04297f, 171.56828f))
-        referencePoint.add(PosePoint(612.2182f, 1060.6664f))
-        referencePoint.add(PosePoint(529.2148f, 1380.1406f))
-        referencePoint.add(PosePoint(444.61377f, 1671.9271f))
-        referencePoint.add(PosePoint(770.07733f, 1056.8763f))
-        referencePoint.add(PosePoint(860.23474f, 1385.1187f))
-        referencePoint.add(PosePoint(951.6639f, 1669.7156f))
-        referencePoint.add(PosePoint(78.929565f, 1056.8763f))
-        AngleUtils.setCurrentPoint(referencePoint)
-        Log.d(TAG, "initReference: ${AngleUtils.trunkPoseAngles}")
     }
 
     @Synchronized
@@ -331,7 +302,7 @@ class LivePreviewActivity :
                         /* isStreamMode = */ true
                     )
                     poseDetectorProcessor.score.observe(this){
-                        tvScore?.text = it.toString()
+                        tvScore?.text = it.toInt().toString()
                     }
                     cameraSource!!.setMachineLearningFrameProcessor(
                         poseDetectorProcessor

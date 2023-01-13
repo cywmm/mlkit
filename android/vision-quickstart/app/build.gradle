@@ -140,6 +140,7 @@ dependencies {
 
     // On Device Machine Learnings
     implementation "com.google.android.odml:image:1.0.0-beta1"
+    implementation 'com.blankj:utilcodex:1.30.6'
 }
 
 configurations {
