@@ -42,7 +42,7 @@ class PoseDetectorProcessor(
     private val rescaleZForVisualization: Boolean,
     private val runClassification: Boolean,
     private val isStreamMode: Boolean
-) : VisionProcessorBase<PoseDetectorProcessor.PoseWithClassification>(context) {
+) : VisionProcessorBase<Pose>(context) {
 
     private val detector: PoseDetector
     private val classificationExecutor: Executor
@@ -63,61 +63,28 @@ class PoseDetectorProcessor(
         detector.close()
     }
 
-    override fun detectInImage(image: InputImage): Task<PoseWithClassification> {
-        return detector
-            .process(image)
-            .continueWith(
-                classificationExecutor,
-                { task ->
-                    val pose = task.getResult()
-                    var classificationResult: List<String> = ArrayList()
-                    if (runClassification) {
-                        if (poseClassifierProcessor == null) {
-                            poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode)
-                        }
-                        classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
-                    }
-                    PoseWithClassification(pose, classificationResult)
-                }
-            )
+    override fun detectInImage(image: InputImage): Task<Pose> {
+        return detector.process(image)
     }
 
-    override fun detectInImage(image: MlImage): Task<PoseWithClassification> {
-        return detector
-            .process(image)
-            .continueWith(
-                classificationExecutor,
-                { task ->
-                    val pose = task.getResult()
-                    var classificationResult: List<String> = ArrayList()
-                    if (runClassification) {
-                        if (poseClassifierProcessor == null) {
-                            poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode)
-                        }
-                        classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
-                    }
-                    PoseWithClassification(pose, classificationResult)
-                }
-            )
+    override fun detectInImage(image: MlImage): Task<Pose> {
+        return detector.process(image)
     }
 
     override fun onSuccess(
-        poseWithClassification: PoseWithClassification,
+        pose: Pose,
         graphicOverlay: GraphicOverlay
     ) {
         graphicOverlay.add(
             PoseGraphic(
                 graphicOverlay,
-                poseWithClassification.pose,
+                pose,
                 showInFrameLikelihood,
                 visualizeZ,
-                rescaleZForVisualization,
-                poseWithClassification.classificationResult
-            )
+                rescaleZForVisualization)
         )
 
-
-        val allPoseLandmarks = poseWithClassification.pose.allPoseLandmarks
+        val allPoseLandmarks = pose.allPoseLandmarks
         //左边：140.99289:147.85149---右边：121.878944:196.83575
         //左边：140.8273:39.963863---右边：113.53857:108.80207
         if (allPoseLandmarks.size >= 33) {

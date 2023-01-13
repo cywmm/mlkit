@@ -161,8 +161,7 @@ public class PoseDetectorVideoProcessor
                         poseWithClassification.pose,
                         false,
                         visualizeZ,
-                        rescaleZForVisualization,
-                        poseWithClassification.classificationResult));
+                        rescaleZForVisualization));
         List<PoseLandmark> allPoseLandmarks = poseWithClassification.pose.getAllPoseLandmarks();
         if (allPoseLandmarks.size() >= 33) {
             ArrayList<PointF> referencePoint = PoseAngleUtils.INSTANCE.googleTo15Point(allPoseLandmarks);

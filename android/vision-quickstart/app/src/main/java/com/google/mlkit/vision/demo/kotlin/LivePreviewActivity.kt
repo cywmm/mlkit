@@ -77,10 +77,10 @@ class LivePreviewActivity :
     private var progressBar: ProgressBar? = null
     private var selectedModel = OBJECT_DETECTION
     private var referencePoint = arrayListOf<PointF>()
-    private val parse =
-        Uri.parse("/sdcard/DCIM/test.mp4")
 //    private val parse =
-//        Uri.parse("https://online-resources.oss-cn-shanghai.aliyuncs.com/VIRTUAL/AI/16x9/hls/A1/resource.m3u8")
+//        Uri.parse("/sdcard/DCIM/test.mp4")
+    private val parse =
+        Uri.parse("https://online-resources.oss-cn-shanghai.aliyuncs.com/VIRTUAL/AI/16x9/hls/A1/resource.m3u8")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

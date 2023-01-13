@@ -34,8 +34,7 @@ internal constructor(
   private val pose: Pose,
   private val showInFrameLikelihood: Boolean,
   private val visualizeZ: Boolean,
-  private val rescaleZForVisualization: Boolean,
-  private val poseClassification: List<String>
+  private val rescaleZForVisualization: Boolean
 ) : Graphic(overlay) {
   private var zMin = java.lang.Float.MAX_VALUE
   private var zMax = java.lang.Float.MIN_VALUE
@@ -66,20 +65,6 @@ internal constructor(
     val landmarks = pose.allPoseLandmarks
     if (landmarks.isEmpty()) {
       return
-    }
-
-    // Draw pose.kt classification text.
-    val classificationX = POSE_CLASSIFICATION_TEXT_SIZE * 0.5f
-    for (i in poseClassification.indices) {
-      val classificationY =
-        canvas.height -
-          (POSE_CLASSIFICATION_TEXT_SIZE * 1.5f * (poseClassification.size - i).toFloat())
-      canvas.drawText(
-        poseClassification[i],
-        classificationX,
-        classificationY,
-        classificationTextPaint
-      )
     }
 
     // Draw all the points
